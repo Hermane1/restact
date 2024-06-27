@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSONPlaceholder API Requests</title>
+    <style>
+        .hidden { display: none; }
+        .results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>JSONPlaceholder API Requests</h1>
+    <button id="getAllPostsBtn">Get All Posts</button>
+    <button id="getPost10Btn">Get Post with ID 10</button>
+    <button id="createPostBtn">Create New Post</button>
+    <button id="replacePost12Btn">Replace Post with ID 12</button>
+    <button id="updatePost12Btn">Update Title of Post with ID 12</button>
+    <button id="deletePost12Btn">Delete Post with ID 12</button>
+
+    <div id="results" class="results hidden"></div>
+
+    <script>
+        // Function to hide previous results
+        function hideResults() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            resultsDiv.classList.add('hidden');
+        }
+
+        // Function to render results
+        function renderResults(data) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            resultsDiv.classList.remove('hidden');
+        }
+
+        document.getElementById('getAllPostsBtn').addEventListener('click', () => {
+            hideResults();
+            fetch('http://jsonplaceholder.typicode.com/posts')
+                .then(response => response.json())
+                .then(data => renderResults(data))
+                .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('getPost10Btn').addEventListener('click', () => {
+            hideResults();
+            fetch('http://jsonplaceholder.typicode.com/posts/10')
+                .then(response => response.json())
+                .then(data => renderResults(data))
+                .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('createPostBtn').addEventListener('click', () => {
+            hideResults();
+            fetch('http://jsonplaceholder.typicode.com/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                },
+                body: JSON.stringify({
+                    title: 'foo',
+                    body: 'bar',
+                    userId: 1,
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('New Post ID:', data.id);
+                    renderResults(data);
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('replacePost12Btn').addEventListener('click', () => {
+            hideResults();
+            fetch('http://jsonplaceholder.typicode.com/posts/12', {
+                method: 'PUT',
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                },
+                body: JSON.stringify({
+                    id: 12,
+                    title: 'foo',
+                    body: 'bar',
+                    userId: 1,
+                }),
+            })
+                .then(response => response.json())
+                .then(data => renderResults(data))
+                .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('updatePost12Btn').addEventListener('click', () => {
+            hideResults();
+            fetch('http://jsonplaceholder.typicode.com/posts/12', {
+                method: 'PATCH',
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                },
+                body: JSON.stringify({
+                    title: 'Updated title',
+                }),
+            })
+                .then(response => response.json())
+                .then(data => renderResults(data))
+                .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('deletePost12Btn').addEventListener('click', () => {
+            hideResults();
+            fetch('http://jsonplaceholder.typicode.com/posts/12', {
+                method: 'DELETE',
+            })
+                .then(() => {
+                    renderResults({ message: 'Post with ID 12 deleted successfully' });
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
